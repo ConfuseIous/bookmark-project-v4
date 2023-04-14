@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "cockroachdb"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                       String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId                   String  @map("user_id") @db.Uuid
+  type                     String
+  provider                 String
+  providerAccountId        String  @map("provider_account_id")
+  refresh_token            String?
+  access_token             String?
+  refresh_token_expires_in Int?
+  expires_at               Int?
+  token_type               String?
+  scope                    String?
+  id_token                 String?
+  session_state            String?
+  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model User {
+  id                   String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String?
+  password             String?
+  email                String?                @unique
+  emailVerified        DateTime?              @map("email_verified")
+  image                String?
+  role                 Int                    @default(1)
+  SellPostUserBookmark SellPostUserBookmark[]
+  SellPost             SellPost[]
+  accounts             Account[]
+  Notification         UserNotification?
+  sessions             Session[]
+
+  @@map("users")
+}
+
+model Session {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sessionToken String   @unique @map("session_token")
+  userId       String   @map("user_id") @db.Uuid
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verificationtokens")
+}
+
+model UserNotification {
+  id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId             String    @unique @map("user_id") @db.Uuid
+  updatedAt          DateTime? @default(now()) @map("updated_at")
+  originalPostStatus String
+  sellPostId         String    @map("sell_post_id") @db.Uuid
+  SellPost           SellPost  @relation(fields: [sellPostId], references: [id], onDelete: Cascade)
+  User               User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model SellPost {
+  id               String                 @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String
+  description      String
+  status           String
+  sellerId         String                 @map("seller_id") @db.Uuid
+  Bookmark         SellPostUserBookmark[]
+  seller           User                   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  UserNotification UserNotification[]
+}
+
+model SellPostUserBookmark {
+  id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  sellPostId     String   @map("sell_post_id") @db.Uuid
+  notificationId String?  @db.Uuid
+  sellPost       SellPost @relation(fields: [sellPostId], references: [id], onDelete: Cascade)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sellPostId])
+  @@map("Bookmark")
+}
+
+model SIBKey {
+  key      String @id
+  uses     Int    @default(300)
+  sibEmail String
+
+  @@unique([key, sibEmail])
+  @@map("sibkeys")
+}
