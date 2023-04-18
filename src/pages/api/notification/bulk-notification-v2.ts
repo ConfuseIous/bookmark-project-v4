@@ -4,7 +4,6 @@ import { SellPost, User, UserNotification } from "@prisma/client";
 import { BulkEmailRequestBody } from "@/types/BulkEmailRequestBody";
 import bulkSendNotificationEmails from "./bulkSendNotificationEmails";
 import { NextApiRequest, NextApiResponse } from "next";
-import getAPIKey from "./api-key/getAPIKey";
 
 /* This endpoint sends email notifications to multiple recipients.
 In practice, it must only be called by the cron job.
@@ -24,11 +23,14 @@ export default async function handler(
   });
 
   // Filter out all the notifications that were queued less than 5 minutes ago
-  const notificationsToSend = existingNotifications.filter((notification) => {
-    return notification.updatedAt === null
-      ? false
-      : notification.updatedAt < new Date(Date.now() - 5 * 60 * 1000);
-  });
+  // const notificationsToSend = existingNotifications.filter((notification) => {
+  //   return notification.updatedAt === null
+  //     ? false
+  //     : notification.updatedAt < new Date(Date.now() - 5 * 60 * 1000);
+  // });
+
+  // Commented out the previous code for demonstration purposes, probably should leave it in for production
+  const notificationsToSend = existingNotifications;
 
   console.log(notificationsToSend);
 
@@ -60,15 +62,15 @@ export default async function handler(
 
         const message: string = userNotifications
           .map((notification) => {
-            return `The sell post <h5>"${
+            return `The sell post "${
               notification.SellPost.name
-            }"</h5> is now "${
+            }" is now ${
               notification.SellPost.status === "available"
                 ? "Available"
                 : "Sold Out"
-            }". <a href="http://localhost:3000/sell-post/${
+            }.\nCheck it out at: http://localhost:3000/sell-post/${
               notification.SellPost.id
-            }">Click to check it out.</a>`;
+            }`;
           })
           .join("<br><br>");
 
@@ -112,18 +114,6 @@ export default async function handler(
       where: {
         id: {
           in: notificationsToSend.map((notification) => notification.id),
-        },
-      },
-    });
-
-    // Update the API Key usage count
-    await client.sIBKey.update({
-      where: {
-        key: process.env.SIB_KEY,
-      },
-      data: {
-        uses: {
-          decrement: body.messageVersions.length,
         },
       },
     });

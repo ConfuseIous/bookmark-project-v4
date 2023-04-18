@@ -5,6 +5,7 @@ import { BulkEmailRequestBody } from "@/types/BulkEmailRequestBody";
 
 /* This endpoint is meant for testing purposes only.
 It was used to test the Sendinblue API's ability to send bulk emails without lagging, and probably won't be used again.
+If you call this, it will send 99 emails to my email domain and I will personally come visit you.
 */
 
 export default async function handler(

@@ -29,6 +29,7 @@ export default function Home() {
     const data = await response.json();
     
     console.log(data);
+    alert(data.key.key);
   }
 
   async function createAPIKey(e: React.FormEvent<HTMLFormElement>) {
@@ -128,6 +129,38 @@ export default function Home() {
             justifyContent: "center",
           }}
         >
+          <h1
+            style={{
+              fontSize: "3em",
+              fontWeight: "bold",
+              textAlign: "center",
+              fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+            }}
+          >
+            Admin Page, Testing Only
+          </h1>
+          <h5
+            style={{
+              fontSize: "1em",
+              color: "#9e9e9e",
+              textAlign: "center",
+              fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+              backgroundColor: "#f5f5f5",
+              padding: "10px",
+              borderRadius: "5px",
+            }}
+          >
+            DO NOT INCLUDE THIS PAGE IN PRODUCTION
+          </h5>
+          <h3
+            style={{
+              fontSize: "1.5em",
+              fontWeight: "bold",
+              fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+            }}
+          >
+            NextAuth
+          </h3>
           <Button
             variant="contained"
             color="primary"
@@ -137,14 +170,6 @@ export default function Home() {
             Sign In
           </Button>
           <br />
-          <Button
-            variant="contained"
-            color="primary"
-            sx={{ m: 2, textAlign: "center", width: "60%" }}
-            onClick={sendNotificationEmail}
-          >
-            Send Notification Email
-          </Button>
           <br />
           <Button
             variant="contained"
@@ -162,10 +187,28 @@ export default function Home() {
           >
             Test Sign In (Hardcoded credentials, NextAuth)
           </Button>
+          <Divider sx={{ width: "100%" }} />
+          <h3
+            style={{
+              fontSize: "1.5em",
+              fontWeight: "bold",
+              fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+            }}
+          >
+            Emails
+          </h3>
           <Button
             variant="contained"
             color="primary"
             sx={{ m: 2, textAlign: "center", width: "60%" }}
+            onClick={sendNotificationEmail}
+          >
+            Send Single Notification Email (Not for Production Use)
+          </Button>
+          <Button
+            variant="contained"
+            color="error"
+            sx={{ m: 4, textAlign: "center", width: "60%" }}
             onClick={sendTestNotificationEmails}
           >
             Spam My Inbox (DO NOT CLICK THIS)
@@ -188,6 +231,15 @@ export default function Home() {
           }}
         >
           <Divider sx={{ width: "100%" }} />
+          <h3
+            style={{
+              fontSize: "1.5em",
+              fontWeight: "bold",
+              fontFamily: "-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif",
+            }}
+          >
+            API Keys
+          </h3>
           <Button
             variant="contained"
             color="primary"
@@ -269,7 +321,7 @@ export default function Home() {
               <Button
                 variant="contained"
                 color="primary"
-                sx={{ textAlign: "center", width: "100%" }}
+                sx={{ textAlign: "center", width: "100%", marginBottom: "5em" }}
                 type="submit"
               >
                 Submit

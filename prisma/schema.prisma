@@ -21,7 +21,7 @@ model Account {
   scope                    String?
   id_token                 String?
   session_state            String?
-  user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([provider, providerAccountId])
   @@map("accounts")
@@ -37,9 +37,9 @@ model User {
   role                 Int                    @default(1)
   SellPostUserBookmark SellPostUserBookmark[]
   SellPost             SellPost[]
-  accounts             Account[]
-  Notification         UserNotification?
-  sessions             Session[]
+  Accounts             Account[]
+  Notifications        UserNotification[]
+  Sessions             Session[]
 
   @@map("users")
 }
@@ -49,7 +49,7 @@ model Session {
   sessionToken String   @unique @map("session_token")
   userId       String   @map("user_id") @db.Uuid
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  User         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sessions")
 }
@@ -65,7 +65,7 @@ model VerificationToken {
 
 model UserNotification {
   id                 String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  userId             String    @unique @map("user_id") @db.Uuid
+  userId             String    @map("user_id") @db.Uuid
   updatedAt          DateTime? @default(now()) @map("updated_at")
   originalPostStatus String
   sellPostId         String    @map("sell_post_id") @db.Uuid
@@ -82,8 +82,10 @@ model SellPost {
   status           String
   sellerId         String                 @map("seller_id") @db.Uuid
   Bookmark         SellPostUserBookmark[]
-  seller           User                   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  Seller           User                   @relation(fields: [sellerId], references: [id], onDelete: Cascade)
   UserNotification UserNotification[]
+
+  @@map("sellposts")
 }
 
 model SellPostUserBookmark {
@@ -91,11 +93,11 @@ model SellPostUserBookmark {
   userId         String   @map("user_id") @db.Uuid
   sellPostId     String   @map("sell_post_id") @db.Uuid
   notificationId String?  @db.Uuid
-  sellPost       SellPost @relation(fields: [sellPostId], references: [id], onDelete: Cascade)
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  SellPost       SellPost @relation(fields: [sellPostId], references: [id], onDelete: Cascade)
+  User           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, sellPostId])
-  @@map("Bookmark")
+  @@map("bookmarks")
 }
 
 model SIBKey {

@@ -1,3 +1,4 @@
+import client from "@/utils/prisma";
 import sibClient from "src/utils/sib.js";
 import { Response } from "@/types/Response";
 import { BulkEmailRequestBody } from "@/types/BulkEmailRequestBody";
@@ -21,8 +22,18 @@ export default async function sendNotificationEmail(
 
   const apiInstance = new sibClient.TransactionalEmailsApi();
 
-  const apiKey = sibClient.authentications["api-key"];
-  apiKey.apiKey = getAPIKey(data.messageVersions.length);
+  const apiKey = (await getAPIKey(data.messageVersions.length)).key;
+
+  if (!apiKey) {
+    return {
+      success: false,
+      message: "No API key found.",
+    };
+  }
+
+  sibClient.authentications["api-key"].apiKey = apiKey.key;
+
+  // console.log(sibClient.authentications);
 
   const email = {
     sender: {
@@ -35,9 +46,9 @@ export default async function sendNotificationEmail(
       <html>
       <body>
         <h1>Listing Alerts</h1>
-        <p>Hi {name},</p>
+        <p>Hi,</p>
         <p>Here are your latest alerts:</p>
-        {message}
+        {{params.message}}
         <p><a href="http://localhost:3000/unsubscribe">Manage your Alert Preferences</a></p>
       </body>
       </html>
@@ -45,10 +56,21 @@ export default async function sendNotificationEmail(
     messageVersions: data.messageVersions,
   };
 
-  console.log(email);
-
   try {
     await apiInstance.sendTransacEmail(email);
+
+    // Update the API Key usage count
+    await client.sIBKey.update({
+      where: {
+        key: apiKey.key,
+      },
+      data: {
+        uses: {
+          decrement: data.messageVersions.length,
+        },
+      },
+    });
+
     return {
       success: true,
     };

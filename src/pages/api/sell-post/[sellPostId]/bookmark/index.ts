@@ -29,7 +29,7 @@ async function PATCH(
     });
 
     const res2 = await scheduleNotificationEmails({
-      postID: updated.id,
+      postID: sellPostId,
       originalPostStatus: updated.status,
       newPostStatus: body.status,
     });

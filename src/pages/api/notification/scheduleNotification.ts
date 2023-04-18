@@ -40,8 +40,6 @@ export default async function scheduleNotificationEmails(
   /* Adds all the notifications to the database.
    * If the status of the post changes back to the original, then remove the notification from the database.
    * If the status of the post changes to a different status, just update the notification in the database.
-   * If notifications were queued 5 minutes or more ago, send emails with SIB and then remove the notifications from the database.
-   * If notifications were queued less than 5 minutes ago and there have been no changes to the post, do nothing.
    */
 
   // Fetch all the notifications from the database
@@ -65,7 +63,7 @@ export default async function scheduleNotificationEmails(
     // Add all the notifications to the database, skipping duplicates
     await client.userNotification.createMany({
       data: notificationsWithoutId,
-      skipDuplicates: true, // Uniqueness is determined by the userId
+      skipDuplicates: false, // Uniqueness is determined by the userId
     });
 
     // Find all the notifications that exist in both arrays
