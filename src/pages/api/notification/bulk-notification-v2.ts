@@ -32,8 +32,6 @@ export default async function handler(
   // Commented out the previous code for demonstration purposes, probably should leave it in for production
   const notificationsToSend = existingNotifications;
 
-  console.log(notificationsToSend);
-
   // Create the BulkEmailRequestBody
   const body: BulkEmailRequestBody = {
     messageVersions: [], // To understand why this is an array, see the comment in @/types/BulkEmailRequestBody
@@ -68,11 +66,11 @@ export default async function handler(
               notification.SellPost.status === "available"
                 ? "Available"
                 : "Sold Out"
-            }.\nCheck it out at: http://localhost:3000/sell-post/${
+            }.\n\nCheck it out at: http://localhost:3000/sell-post/${
               notification.SellPost.id
             }`;
           })
-          .join("<br><br>");
+          .join("\n\n");
 
         const user = notificationsByUser[userId][0].User as User;
 
@@ -117,6 +115,9 @@ export default async function handler(
         },
       },
     });
+  } else {
+    console.log("Failed to send email notifications");
+    console.log(emailResponse.message);
   }
 
   return emailResponse;

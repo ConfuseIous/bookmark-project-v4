@@ -1,5 +1,6 @@
 import client from "@/utils/prisma";
 import sibClient from "src/utils/sib.js";
+import { changeAPIKey } from "src/utils/sib.js";
 import { Response } from "@/types/Response";
 import { BulkEmailRequestBody } from "@/types/BulkEmailRequestBody";
 import getAPIKey from "./api-key/getAPIKey";
@@ -31,9 +32,7 @@ export default async function sendNotificationEmail(
     };
   }
 
-  sibClient.authentications["api-key"].apiKey = apiKey.key;
-
-  // console.log(sibClient.authentications);
+  changeAPIKey(apiKey.key);
 
   const email = {
     sender: {
