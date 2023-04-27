@@ -70,15 +70,7 @@ export default function Home() {
   }
 
   async function sendTestNotificationEmails() {
-    const response = await fetch("/api/notification/testNotificationEmails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: "",
-    });
-    const data = await response.json();
-    console.log(data);
+    alert("This function has been disabled");
   }
 
   async function testBulkNotifsV2() {
